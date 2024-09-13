@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "security.ignore",
+      "type": "com.light.framework.mvc.security.config.LightWebSecurityConfiguration",
+      "sourceType": "com.light.framework.mvc.security.config.LightWebSecurityConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "security.ignore.whites",
+      "type": "java.lang.String[]",
+      "sourceType": "com.light.framework.mvc.security.config.LightWebSecurityConfiguration"
+    }
+  ],
+  "hints": []
+}

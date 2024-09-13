@@ -1,0 +1,82 @@
+package com.light.framework.mvc.response;
+
+import java.sql.SQLException;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
+import com.light.framework.cache.exception.CacheException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.light.core.exception.ServiceException;
+import com.light.core.log.DebugLogger;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    private static DebugLogger debugLogger = DebugLogger.getInstance();
+    private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ServiceException.class)
+    @ResponseBody
+    public AjaxResult handleException(ServiceException e) {
+        logger.info(e.message(), e);
+        return AjaxResult.error(e.code(), e.message());
+    }
+
+    @ExceptionHandler(SQLException.class)
+    @ResponseBody
+    public AjaxResult handleException(SQLException e) {
+        logger.error(e.getMessage(), e);
+        return AjaxResult.error("系统异常");
+    }
+
+    @ExceptionHandler(CacheException.class)
+    @ResponseBody
+    public AjaxResult handleException(CacheException e) {
+        logger.error(e.getMessage(), e);
+        return AjaxResult.error("系统异常");
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public AjaxResult handleException(ConstraintViolationException e) {
+        logger.error(e.getMessage(), e);
+        Set<ConstraintViolation<?>> set = e.getConstraintViolations();
+        String msg = e.getMessage();
+        if (!CollectionUtils.isEmpty(set)) {
+            ConstraintViolation constraintViolation = set.iterator().next();
+            if (constraintViolation != null) {
+                msg = constraintViolation.getMessage();
+            }
+        }
+        return AjaxResult.error(msg);
+    }
+
+    @ExceptionHandler(BindException.class)
+    @ResponseBody
+    public AjaxResult handleException(BindException e) {
+        logger.error(e.getMessage(), e);
+        return AjaxResult.error(e.getBindingResult().getFieldError().getDefaultMessage());
+    }
+
+    @ExceptionHandler(OAuth2AuthorizationException.class)
+    @ResponseBody
+    public AjaxResult handleException(OAuth2AuthorizationException e) {
+        logger.error(e.getMessage(), e);
+        return AjaxResult.error("oauth2认证异常");
+    }
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public AjaxResult handleException(Exception e) {
+        logger.error(e.getMessage(), e);
+        return AjaxResult.error("系统异常");
+    }
+}
