@@ -34,6 +34,7 @@ com\light\mapper\magic\ExtendMybatisMapperProxy$PlainMethodInvoker.class
 com\light\mapper\injector\methods\SelectByIdIgnoreLogicDelete.class
 com\light\mapper\injector\methods\ReplaceInsert.class
 com\light\mapper\BaseMapper.class
+com\light\mapper\boot\MapperConfig.class
 com\light\mapper\injector\methods\SelectFirstIgnoreLogicDelete.class
 com\light\mapper\sql\ThreadLocalSqlStopWatch$1.class
 com\light\mapper\plugin\StatementPlugin.class

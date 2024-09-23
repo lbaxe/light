@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title thymeleaf</title>
+</head>
+<body>
+<#list list as menu>
+<tr th:each="menu:${list}">
+    <td th:text="${menu.menuId}"></td>
+    <td th:text="${menu.menuName}"></td>
+</tr>
+</body>
+</html>

@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.client.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -16,8 +14,9 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 
-@Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(OAuth2ClientProperties.class)
+// @Configuration(proxyBeanMethods = false)
+// @EnableConfigurationProperties(OAuth2ClientProperties.class)
+// @Conditional(MyOauth2Condition.class)
 public class LightOAuth2Configuration {
     /**
      * A repository for OAuth 2.0

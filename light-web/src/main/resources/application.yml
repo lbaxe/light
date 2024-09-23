@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: light
+  profiles:
+    active: dev
+
+#不校验登录 白名单url
+security:
+  ignore:
+    whites:
+      - /task/**
+      - /druid/**
+      - /error/**
+      - /captcha/captcha
+      - /login.jsp
+      - /login/logout
+      - /**

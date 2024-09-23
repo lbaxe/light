@@ -1,8 +1,5 @@
 package com.light.mapper.boot;
 
-import com.light.mapper.injector.ExtendSqlInjector;
-import com.light.mapper.magic.ExtendMybatisConfiguration;
-import com.light.mapper.plugin.DataEncryptDecryptPlugin;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +11,9 @@ import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.light.mapper.injector.ExtendSqlInjector;
+import com.light.mapper.magic.ExtendMybatisConfiguration;
+import com.light.mapper.plugin.DataEncryptDecryptPlugin;
 
 @Configuration
 @AutoConfigureBefore(MybatisPlusCustomAutoConfiguration.class)

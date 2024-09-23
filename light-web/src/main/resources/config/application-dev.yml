@@ -1,0 +1,83 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  datasource:
+    dynamic:
+      #设置严格模式，默认false不启动，不启动则使用默认数据源;启动后未匹配到指定数据源时会抛出异常
+      strict: true
+      #设置默认数据源，非默认数据源DAO层类需要加注解@DS("数据库名")
+      primary: master
+      datasource:
+        master:
+          username: root
+          password: 123456
+          url: jdbc:mysql://127.0.0.1:3306/light?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+        slave:
+          username: root
+          password: 123456
+          url: jdbc:mysql://127.0.0.1:3306/light?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 对url进行统计，统计每个url调用数据的频次
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: /*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.html,*.json,/druid/
+
+      #druid 监控页面
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: druid
+        login-password: druid
+        #允许哪些ip，多个逗号分隔
+        allow: 127.0.0.1
+        #禁止哪些ip
+        deny:
+        reset-enable: false
+
+  # 分库分表
+  shardingsphere:
+    #数据源信息
+    datasource:
+      names: db1
+      db1:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/light?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false
+        username: root
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+        # druid配置
+        filters: stat,wall,slf4j
+    #属性配置(可选)
+    props:
+      #是否开启SQL显示，默认值: false
+      sql.show: true
+      #executor.size: 工作线程数量，默认值: CPU核数
+    sharding:
+      tables:
+        #db1:
+        #  actual-data-nodes: db1.order->{0..9}
+        #  table-strategy:
+        #    inline:
+        #      algorithm-expression: order_$->{user_id % 10}
+        #      sharding-column: user_id
+        db1:
+          actual-data-nodes: db1.order
+          table-strategy:
+            complex:
+              sharding-columns: user_id,order_date
+              algorithm-class-name: com.light.xxx.OrderShardingAlgorithm
+        #db1:
+        #  actual-data-nodes: db1.order_$->{0..1}
+        #  table-strategy:
+        #    hint:
+        #      algorithm-class-name: com.light.xxx.MyHintShardingAlgorithm
