@@ -7,13 +7,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.light.framework.plugin.PluginContext;
-import com.light.framework.plugin.controller.ControllerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.light.framework.mvc.filter.GenericFilterBean;
 import com.light.framework.mvc.http.XssHttpServletRequestWraper;
+import com.light.framework.plugin.PluginContext;
+import com.light.framework.plugin.controller.ControllerPlugin;
 
 /**
  * xss防脚本注入

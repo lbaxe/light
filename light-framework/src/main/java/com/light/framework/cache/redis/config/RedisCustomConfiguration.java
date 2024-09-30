@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-import com.light.framework.cache.redis.IRedisClient;
-import com.light.framework.cache.redis.RedisClientContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -20,6 +18,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import com.light.common.text.TextUtil;
+import com.light.framework.cache.redis.IRedisClient;
+import com.light.framework.cache.redis.RedisClientContext;
 
 @Configuration
 public class RedisCustomConfiguration {

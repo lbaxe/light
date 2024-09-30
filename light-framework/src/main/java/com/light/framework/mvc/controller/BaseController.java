@@ -9,13 +9,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.light.framework.mvc.DownloadContentType;
-import com.light.framework.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.light.core.log.DebugLogger;
+import com.light.framework.mvc.DownloadContentType;
 import com.light.framework.mvc.util.ServletUtil;
+import com.light.framework.util.RandomUtil;
 
 public class BaseController {
     protected static final DebugLogger debugLogger = DebugLogger.getInstance();

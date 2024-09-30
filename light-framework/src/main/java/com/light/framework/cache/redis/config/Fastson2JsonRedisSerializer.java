@@ -25,9 +25,9 @@ import org.springframework.lang.Nullable;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONWriter;
-import com.light.framework.cache.exception.CacheException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.light.framework.cache.exception.CacheException;
 
 /**
  * Jackson2JsonRedisSerializer

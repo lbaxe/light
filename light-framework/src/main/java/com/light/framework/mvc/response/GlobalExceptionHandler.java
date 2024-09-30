@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import com.light.framework.cache.exception.CacheException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.light.core.exception.ServiceException;
 import com.light.core.log.DebugLogger;
+import com.light.framework.cache.exception.CacheException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

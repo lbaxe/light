@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.light.framework.util.UrlUtil;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -21,6 +20,7 @@ import com.light.core.util.TraceIdUtil;
 import com.light.framework.mvc.filter.GenericFilterBean;
 import com.light.framework.mvc.filter.ProxyFilterChain;
 import com.light.framework.mvc.util.RequestUtil;
+import com.light.framework.util.UrlUtil;
 
 /**
  * 默认处理ajax请求

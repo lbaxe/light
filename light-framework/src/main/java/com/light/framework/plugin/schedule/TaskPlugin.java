@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.light.framework.quartz.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.light.core.util.SpringContextUtil;
 import com.light.framework.plugin.IPlugin;
+import com.light.framework.quartz.task.ITask;
 
 public class TaskPlugin implements IPlugin<Map<String, ITask>> {
     private static final Logger logger = LoggerFactory.getLogger(TaskPlugin.class);

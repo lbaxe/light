@@ -3,7 +3,6 @@ package com.light.framework.quartz;
 import java.util.Map;
 import java.util.UUID;
 
-import com.light.framework.quartz.task.ITask;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -11,6 +10,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.light.framework.quartz.task.ITask;
 import com.light.framework.util.ReflectUtil;
 
 /**

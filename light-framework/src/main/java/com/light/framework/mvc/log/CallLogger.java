@@ -1,10 +1,10 @@
 package com.light.framework.mvc.log;
 
-import com.light.framework.mvc.CallInfo;
 import org.slf4j.Logger;
 
 import com.light.common.text.ThreadLocalMessageFormat;
 import com.light.core.util.Log4j2Util;
+import com.light.framework.mvc.CallInfo;
 
 public class CallLogger {
     private static final Logger logger = Log4j2Util.register("call", "call");
