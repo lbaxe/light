@@ -2,7 +2,6 @@ package com.light.core.util;
 
 import java.nio.charset.Charset;
 
-import com.light.core.conts.Const;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
@@ -20,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.light.common.conf.SystemUtil;
+import com.light.core.conts.Const;
 
 public class Log4j2Util {
 

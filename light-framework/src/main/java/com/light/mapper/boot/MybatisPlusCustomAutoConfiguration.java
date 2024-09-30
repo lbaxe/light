@@ -81,7 +81,7 @@ public class MybatisPlusCustomAutoConfiguration implements InitializingBean {
 
     private DatabaseIdProvider databaseIdProvider;
 
-    private List<com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer> configurationCustomizers;
+    private List<ConfigurationCustomizer> configurationCustomizers;
 
     private List<MybatisPlusPropertiesCustomizer> mybatisPlusPropertiesCustomizers;
 
@@ -230,7 +230,7 @@ public class MybatisPlusCustomAutoConfiguration implements InitializingBean {
             configuration = new ExtendMybatisConfiguration();
         }
         if (configuration != null && !CollectionUtils.isEmpty(this.configurationCustomizers)) {
-            for (com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer customizer : this.configurationCustomizers) {
+            for (ConfigurationCustomizer customizer : this.configurationCustomizers) {
                 customizer.customize(configuration);
             }
         }

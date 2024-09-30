@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.light.mapper.entity.IEntity;
-import com.light.mapper.entity.Metadata;
-import com.light.mapper.entity.annotation.Encrypt;
-import com.light.mapper.entity.annotation.TableCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +15,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.light.mapper.entity.IEntity;
+import com.light.mapper.entity.Metadata;
+import com.light.mapper.entity.annotation.Encrypt;
+import com.light.mapper.entity.annotation.TableCache;
 
 public final class EntityUtil {
     private static final Logger logger = LoggerFactory.getLogger(EntityUtil.class);

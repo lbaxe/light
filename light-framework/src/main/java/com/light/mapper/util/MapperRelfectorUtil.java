@@ -5,14 +5,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.light.mapper.BaseMapper;
-import com.light.mapper.entity.IEntity;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.reflection.TypeParameterResolver;
 import org.apache.ibatis.session.Configuration;
 
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.light.mapper.BaseMapper;
+import com.light.mapper.entity.IEntity;
 
 public class MapperRelfectorUtil {
     private static final ConcurrentMap<Class<?>, List<Method>> MAPPER_METHOD_CACHE = new ConcurrentHashMap<>();
