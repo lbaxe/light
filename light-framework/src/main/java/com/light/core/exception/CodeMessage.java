@@ -1,6 +1,6 @@
 package com.light.core.exception;
 
-public interface IMessageCode {
+public interface CodeMessage {
     String code();
 
     String message();

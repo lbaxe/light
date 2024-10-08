@@ -2,9 +2,9 @@ package com.light.mapper.exception;
 
 import java.sql.SQLException;
 
-import com.light.core.exception.IMessageCode;
+import com.light.core.exception.CodeMessage;
 
-public class MapperException extends RuntimeException implements IMessageCode {
+public class MapperException extends RuntimeException implements CodeMessage {
     private static final String DEFAULT_CODE = "-1";
 
     private SQLException sqlException;

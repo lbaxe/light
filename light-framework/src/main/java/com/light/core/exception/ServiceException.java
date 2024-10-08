@@ -1,6 +1,6 @@
 package com.light.core.exception;
 
-public class ServiceException extends RuntimeException implements IMessageCode {
+public class ServiceException extends RuntimeException implements CodeMessage {
 
     private static final String DEFAULT_CODE = "500";
 
@@ -29,14 +29,14 @@ public class ServiceException extends RuntimeException implements IMessageCode {
         setCode(code);
     }
 
-    public ServiceException(IMessageCode messageCode) {
-        super(messageCode.message());
-        setCode(messageCode.code());
+    public ServiceException(CodeMessage codeMessage) {
+        super(codeMessage.message());
+        setCode(codeMessage.code());
     }
 
-    public ServiceException(IMessageCode messageCode, Throwable cause) {
-        super(messageCode.message(), cause);
-        setCode(messageCode.code());
+    public ServiceException(CodeMessage codeMessage, Throwable cause) {
+        super(codeMessage.message(), cause);
+        setCode(codeMessage.code());
     }
 
     private void setCode(String code) {

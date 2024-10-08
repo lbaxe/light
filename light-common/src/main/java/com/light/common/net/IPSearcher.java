@@ -11,6 +11,11 @@ import org.lionsoul.ip2region.DbSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 根据IP获取行政区域
+ * 
+ * @author luban
+ */
 public class IPSearcher {
     private static Logger logger = LoggerFactory.getLogger(IPSearcher.class);
     private static final ThreadLocal<DbSearcher> threadLocal = ThreadLocal.withInitial(() -> {
