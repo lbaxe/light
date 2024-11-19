@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import com.light.framework.mvc.response.AjaxResult;
+import com.light.framework.mvc.response.JsonResult;
 
 public class AjaxAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(401);
-        response.getWriter().println(AjaxResult.error("401", authException.getMessage()));
+        response.getWriter().println(JsonResult.error("401", authException.getMessage()));
     }
 }

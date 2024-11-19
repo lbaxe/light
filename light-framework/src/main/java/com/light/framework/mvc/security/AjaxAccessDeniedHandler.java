@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
-import com.light.framework.mvc.response.AjaxResult;
+import com.light.framework.mvc.response.JsonResult;
 
 public class AjaxAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
         AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(403);
-        response.getWriter().println(AjaxResult.error("403", accessDeniedException.getMessage()));
+        response.getWriter().println(JsonResult.error("403", accessDeniedException.getMessage()));
     }
 }

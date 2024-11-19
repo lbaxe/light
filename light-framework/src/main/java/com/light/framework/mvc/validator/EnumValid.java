@@ -13,6 +13,8 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
 /**
+ * 枚举校验
+ * 
  * @author luban
  */
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
@@ -39,7 +41,7 @@ public @interface EnumValid {
         }
 
         @Override
-        public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
+        public boolean isValid(Object value, ConstraintValidatorContext context) {
             if (value == null) {
                 return true;
             }
@@ -58,6 +60,5 @@ public @interface EnumValid {
                 return false;
             }
         }
-
     }
 }

@@ -13,16 +13,6 @@
     <name>light-common</name>
 
     <properties>
-        <java.version>1.8</java.version>
-        <junit.version>4.11</junit.version>
-        <httpasyncclient.version>4.1.5</httpasyncclient.version>
-        <commons-logging.version>1.2</commons-logging.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <poi-ooxml.version>4.1.2</poi-ooxml.version>
-        <easyexcel.version>3.1.1</easyexcel.version>
-        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
-        <ip2region.version>1.7.2</ip2region.version>
-        <ip2region-spring-boot-starter.version>1.0.7.RELEASE</ip2region-spring-boot-starter.version>
     </properties>
 
     <dependencies>
@@ -42,32 +32,26 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
-            <version>${httpasyncclient.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>${commons-logging.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${poi-ooxml.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
-            <version>${easyexcel.version}</version>
-            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -84,14 +68,10 @@
         <dependency>
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
-            <version>${ip2region.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.hiwepy</groupId>
             <artifactId>ip2region-spring-boot-starter</artifactId>
-            <version>${ip2region-spring-boot-starter.version}</version>
-            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -102,6 +82,10 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
     </dependencies>
 </project>

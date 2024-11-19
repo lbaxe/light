@@ -33,7 +33,7 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.light.core.conts.Const;
-import com.light.framework.mvc.response.AjaxResult;
+import com.light.framework.mvc.response.JsonResult;
 import com.light.framework.mvc.security.*;
 import com.light.framework.mvc.security.filter.JwtAuthenticationFilter;
 import com.light.framework.mvc.security.filter.MultiLoginTypeAuthenticationFilter;
@@ -147,7 +147,7 @@ public class LightWebSecurityConfiguration {
             new MultiLoginTypeAuthenticationFilter(authenticationManager());
         multiLoginTypeAuthenticationFilter.setAuthenticationFailureHandler((request, response, exception) -> {
             response.setStatus(401);
-            response.getWriter().println(AjaxResult.error("401", exception.getMessage()));
+            response.getWriter().println(JsonResult.error("401", exception.getMessage()));
         });
 
         http.requestMatcher(loginMatcher).authorizeRequests()

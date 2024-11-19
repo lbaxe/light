@@ -73,33 +73,33 @@ public class GlobalControllerResponseBodyAdvice implements ResponseBodyAdvice {
                     Throwable t = (Throwable)mapBody.get("exp");
                     Throwable actual = ThrowableUtil.unwrapThrowable(t);
                     if (actual instanceof ServiceException) {
-                        newBody = AjaxResult.error(((ServiceException)actual).code(), actual.getMessage());
+                        newBody = JsonResult.error(((ServiceException)actual).code(), actual.getMessage());
                     } else {
-                        newBody = AjaxResult.error(status + "", mapBody.get("error") + "");
+                        newBody = JsonResult.error(status + "", mapBody.get("error") + "");
                     }
                 }
             } else {
                 // do nothing
-                newBody = AjaxResult.error("系统异常，请联系管理员");
+                newBody = JsonResult.error("系统异常，请联系管理员");
             }
         } else {
             if (body instanceof String) {
                 try {
-                    newBody = objectMapper.writeValueAsString(AjaxResult.success(body));
+                    newBody = objectMapper.writeValueAsString(JsonResult.success(body));
                 } catch (JsonProcessingException e) {
                     logger.error(
                         serverHttpRequest.getURI().getPath() + " ,request uri path: {}, format response body error", e);
                 }
-            } else if (!(body instanceof AjaxResult)) {
+            } else if (!(body instanceof JsonResult)) {
                 if (serverHttpResponse instanceof ServletServerHttpResponse) {
                     int status = ((ServletServerHttpResponse)serverHttpResponse).getServletResponse().getStatus();
                     if (status == HttpStatus.OK.value()) {
-                        newBody = AjaxResult.success(body != null ? body : Collections.emptyMap());
+                        newBody = JsonResult.success(body != null ? body : Collections.emptyMap());
                     } else {
-                        newBody = AjaxResult.error(status + "", body.toString());
+                        newBody = JsonResult.error(status + "", body.toString());
                     }
                 } else {
-                    newBody = AjaxResult.success(body != null ? body : Collections.emptyMap());
+                    newBody = JsonResult.success(body != null ? body : Collections.emptyMap());
                 }
             }
         }

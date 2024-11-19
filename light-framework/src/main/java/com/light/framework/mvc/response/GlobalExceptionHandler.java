@@ -26,28 +26,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     @ResponseBody
-    public AjaxResult handleException(ServiceException e) {
+    public JsonResult handleException(ServiceException e) {
         logger.info(e.message(), e);
-        return AjaxResult.error(e.code(), e.message());
+        return JsonResult.error(e.code(), e.message());
     }
 
     @ExceptionHandler(SQLException.class)
     @ResponseBody
-    public AjaxResult handleException(SQLException e) {
+    public JsonResult handleException(SQLException e) {
         logger.error(e.getMessage(), e);
-        return AjaxResult.error("系统异常");
+        return JsonResult.error("系统异常");
     }
 
     @ExceptionHandler(CacheException.class)
     @ResponseBody
-    public AjaxResult handleException(CacheException e) {
+    public JsonResult handleException(CacheException e) {
         logger.error(e.getMessage(), e);
-        return AjaxResult.error("系统异常");
+        return JsonResult.error("系统异常");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
-    public AjaxResult handleException(ConstraintViolationException e) {
+    public JsonResult handleException(ConstraintViolationException e) {
         logger.error(e.getMessage(), e);
         Set<ConstraintViolation<?>> set = e.getConstraintViolations();
         String msg = e.getMessage();
@@ -57,26 +57,26 @@ public class GlobalExceptionHandler {
                 msg = constraintViolation.getMessage();
             }
         }
-        return AjaxResult.error(msg);
+        return JsonResult.error(msg);
     }
 
     @ExceptionHandler(BindException.class)
     @ResponseBody
-    public AjaxResult handleException(BindException e) {
+    public JsonResult handleException(BindException e) {
         logger.error(e.getMessage(), e);
-        return AjaxResult.error(e.getBindingResult().getFieldError().getDefaultMessage());
+        return JsonResult.error(e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     @ExceptionHandler(OAuth2AuthorizationException.class)
     @ResponseBody
-    public AjaxResult handleException(OAuth2AuthorizationException e) {
+    public JsonResult handleException(OAuth2AuthorizationException e) {
         logger.error(e.getMessage(), e);
-        return AjaxResult.error("oauth2认证异常");
+        return JsonResult.error("oauth2认证异常");
     }
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public AjaxResult handleException(Exception e) {
+    public JsonResult handleException(Exception e) {
         logger.error(e.getMessage(), e);
-        return AjaxResult.error("系统异常");
+        return JsonResult.error("系统异常");
     }
 }

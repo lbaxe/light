@@ -34,7 +34,7 @@ import com.light.framework.mvc.filter.LightFilter;
 import com.light.framework.mvc.http.XssCommonsMultipartResolver;
 
 @Configuration
-public class LightWebMvcConfiguration implements WebMvcConfigurer, ApplicationContextAware {
+public class ExtendWebMvcConfiguration implements WebMvcConfigurer, ApplicationContextAware {
     private ApplicationContext applicationContext;
     @Autowired
     private ObjectFactory<HttpMessageConverters> messageConverters;

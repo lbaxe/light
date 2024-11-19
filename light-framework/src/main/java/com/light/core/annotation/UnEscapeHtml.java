@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @description 不做xss判断参数
  * 
- * @param: null
- * @date 2022/7/27 13:31
+ * controller层参数注释， 注释参数将被{@link com.light.framework.mvc.filter.global.XssFilter}<br>
+ * 忽略处理， 注释参数包含的html代码不会被转义。
+ * 
+ * @see com.light.framework.mvc.filter.global.XssFilter
  * @author luban
- * @version 1.0
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

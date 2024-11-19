@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.light.framework.plugin.PluginContext;
 
 @Component
-public class LightApplicationListener implements ApplicationListener<ApplicationEvent> {
+public class ExtendApplicationListener implements ApplicationListener<ApplicationEvent> {
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {

@@ -1,11 +1,13 @@
 package com.light.framework.mvc.response;
 
+import java.util.StringJoiner;
+
 /**
  * 操作消息提醒
  * 
  * @author ruoyi
  */
-public class AjaxResult<T> {
+public class JsonResult<T> {
     public static final String DEFAULT_SUCCESS_CODE = "200";// ref http状态200 OK
     public static final String DEFAULT_ERROR_CODE = "500";// ref http状态500 Internal Server Error
     /** 状态码 */
@@ -18,9 +20,9 @@ public class AjaxResult<T> {
     private T data;
 
     /**
-     * 初始化一个新创建的 AjaxResult 对象，使其表示一个空消息。
+     * 使其表示一个空消息。
      */
-    public AjaxResult() {}
+    public JsonResult() {}
 
     public String getCode() {
         return code;
@@ -51,8 +53,8 @@ public class AjaxResult<T> {
      * 
      * @return 成功消息
      */
-    public static AjaxResult success() {
-        return AjaxResult.success("操作成功");
+    public static JsonResult success() {
+        return JsonResult.success("操作成功");
     }
 
     /**
@@ -60,8 +62,8 @@ public class AjaxResult<T> {
      * 
      * @return 成功消息
      */
-    public static <T> AjaxResult success(T data) {
-        return AjaxResult.success("操作成功", data);
+    public static <T> JsonResult success(T data) {
+        return JsonResult.success("操作成功", data);
     }
 
     /**
@@ -70,8 +72,8 @@ public class AjaxResult<T> {
      * @param msg 返回内容
      * @return 成功消息
      */
-    public static AjaxResult success(String msg) {
-        return AjaxResult.success(msg, null);
+    public static JsonResult success(String msg) {
+        return JsonResult.success(msg, null);
     }
 
     /**
@@ -81,8 +83,8 @@ public class AjaxResult<T> {
      * @param data 数据对象
      * @return 成功消息
      */
-    public static <T> AjaxResult success(String msg, T data) {
-        AjaxResult result = new AjaxResult();
+    public static <T> JsonResult success(String msg, T data) {
+        JsonResult result = new JsonResult();
         result.setCode(DEFAULT_SUCCESS_CODE);
         result.setMsg(msg);
         result.setData(data);
@@ -94,8 +96,8 @@ public class AjaxResult<T> {
      * 
      * @return
      */
-    public static AjaxResult error() {
-        return AjaxResult.error("操作失败");
+    public static JsonResult error() {
+        return JsonResult.error("操作失败");
     }
 
     /**
@@ -104,8 +106,8 @@ public class AjaxResult<T> {
      * @param msg 返回内容
      * @return 警告消息
      */
-    public static AjaxResult error(String msg) {
-        return AjaxResult.error(DEFAULT_ERROR_CODE, msg);
+    public static JsonResult error(String msg) {
+        return JsonResult.error(DEFAULT_ERROR_CODE, msg);
     }
 
     /**
@@ -116,8 +118,8 @@ public class AjaxResult<T> {
      * @param <T>
      * @return
      */
-    public static <T> AjaxResult error(String code, String msg) {
-        return AjaxResult.error(code, msg, null);
+    public static <T> JsonResult error(String code, String msg) {
+        return JsonResult.error(code, msg, null);
     }
 
     /**
@@ -127,8 +129,8 @@ public class AjaxResult<T> {
      * @param msg 返回内容
      * @return 警告消息
      */
-    public static <T> AjaxResult error(String code, String msg, T data) {
-        AjaxResult result = new AjaxResult();
+    public static <T> JsonResult error(String code, String msg, T data) {
+        JsonResult result = new JsonResult();
         result.setCode(code);
         result.setMsg(msg);
         result.setData(data);
@@ -137,6 +139,7 @@ public class AjaxResult<T> {
 
     @Override
     public String toString() {
-        return "AjaxResult [data=" + this.data + ", code=" + this.code + ", msg=" + this.msg + "]";
+        return new StringJoiner(", ", JsonResult.class.getSimpleName() + "[", "]").add("code='" + code + "'")
+            .add("msg='" + msg + "'").add("data=" + data).toString();
     }
 }
