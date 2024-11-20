@@ -7,7 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.light.framework.mvc.filter.external.ExternalFilter;
+import com.light.framework.mvc.filter.light.external.ExternalFilter;
 import com.light.framework.plugin.IPlugin;
 
 public class ExternalFilterPlugin implements IPlugin<List<ExternalFilter>> {

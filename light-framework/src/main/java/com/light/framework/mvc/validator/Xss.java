@@ -10,12 +10,13 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
+import com.light.framework.mvc.filter.light.inner.XssFilter;
 import org.springframework.web.util.HtmlUtils;
 
 /**
  *
  * 提供方法级xss脚本注解校验，因通过SpringAOP的MethodInterceptor切面集成，<br>
- * 所以优先级小于{@link com.light.framework.mvc.filter.global.XssFilter}。
+ * 所以优先级小于{@link XssFilter}。
  * 需要搭配{@link com.light.core.annotation.UnEscapeHtml}，该注解才能生效
  *
  * @author luban

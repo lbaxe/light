@@ -30,7 +30,7 @@ import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.light.framework.mvc.controller.ErrorController;
-import com.light.framework.mvc.filter.LightFilter;
+import com.light.framework.mvc.filter.light.LightFilter;
 import com.light.framework.mvc.http.XssCommonsMultipartResolver;
 
 @Configuration
@@ -48,7 +48,7 @@ public class ExtendWebMvcConfiguration implements WebMvcConfigurer, ApplicationC
         registration.setDispatcherTypes(
             EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR));
         // 优先级在RequestContextFilter之后
-        registration.setOrder(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 104);
+        registration.setOrder(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 1);
         return registration;
     }
 

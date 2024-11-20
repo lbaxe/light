@@ -8,7 +8,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     @ResponseBody
     public JsonResult handleException(ServiceException e) {
-        logger.info(e.message(), e);
+        // logger.info(e.message(), e);
         return JsonResult.error(e.code(), e.message());
     }
 
@@ -41,14 +40,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CacheException.class)
     @ResponseBody
     public JsonResult handleException(CacheException e) {
-        logger.error(e.getMessage(), e);
+        // logger.error(e.getMessage(), e);
         return JsonResult.error("系统异常");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
     public JsonResult handleException(ConstraintViolationException e) {
-        logger.error(e.getMessage(), e);
+        // logger.error(e.getMessage(), e);
         Set<ConstraintViolation<?>> set = e.getConstraintViolations();
         String msg = e.getMessage();
         if (!CollectionUtils.isEmpty(set)) {
@@ -63,20 +62,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     @ResponseBody
     public JsonResult handleException(BindException e) {
-        logger.error(e.getMessage(), e);
+        // logger.error(e.getMessage(), e);
         return JsonResult.error(e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
-    @ExceptionHandler(OAuth2AuthorizationException.class)
-    @ResponseBody
-    public JsonResult handleException(OAuth2AuthorizationException e) {
-        logger.error(e.getMessage(), e);
-        return JsonResult.error("oauth2认证异常");
-    }
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public JsonResult handleException(Exception e) {
-        logger.error(e.getMessage(), e);
+        // logger.error(e.getMessage(), e);
         return JsonResult.error("系统异常");
     }
 }

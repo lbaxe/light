@@ -2,22 +2,25 @@ package com.light.framework.plugin.filter;
 
 import java.lang.reflect.Modifier;
 
-import com.light.framework.mvc.filter.light.external.ExternalFilter;
+import com.light.framework.mvc.filter.shiro.external.ExternalShiroFilter;
 import com.light.framework.plugin.AbstractClassScan;
 
-public class ExternalFilterClassScan extends AbstractClassScan {
+public class ExternalShiroFilterClassScan extends AbstractClassScan {
 
     @Override
     protected String path() {
-        return "com.light.**.filter.**";
+        return "com.dzq.**.filter.**";
     }
 
     @Override
     public boolean conventional(Class<?> clazz) {
-        if (!ExternalFilter.class.isAssignableFrom(clazz)) {
+        if (!ExternalShiroFilter.class.isAssignableFrom(clazz)) {
             return false;
         }
-        if (ExternalFilter.class == clazz) {
+        if (!ExternalShiroFilter.class.isAssignableFrom(clazz)) {
+            return false;
+        }
+        if (ExternalShiroFilter.class == clazz) {
             return false;
         }
         if (Modifier.isAbstract(clazz.getModifiers())) {
