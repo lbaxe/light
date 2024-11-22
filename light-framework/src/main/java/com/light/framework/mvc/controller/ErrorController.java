@@ -24,6 +24,7 @@ import com.light.core.log.DebugLogger;
 
 public class ErrorController extends BasicErrorController {
     private DebugLogger debugLogger = DebugLogger.getInstance();
+
     private final ErrorAttributes errorAttributes;
 
     public ErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
@@ -40,7 +41,7 @@ public class ErrorController extends BasicErrorController {
             .unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
         response.setStatus(status.value());
         ModelAndView modelAndView = resolveErrorView(request, response, status, model);
-        return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
+        return (modelAndView != null) ? modelAndView : new ModelAndView("templates/error", model);
     }
 
     @Override
