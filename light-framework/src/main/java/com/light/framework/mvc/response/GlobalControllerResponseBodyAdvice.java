@@ -75,7 +75,7 @@ public class GlobalControllerResponseBodyAdvice implements ResponseBodyAdvice {
                     if (actual instanceof ServiceException) {
                         newBody = JsonResult.error(((ServiceException)actual).code(), actual.getMessage());
                     } else {
-                        newBody = JsonResult.error(status + "", mapBody.get("templates/error") + "");
+                        newBody = JsonResult.error(status + "", mapBody.get("error") + "");
                     }
                 }
             } else {
