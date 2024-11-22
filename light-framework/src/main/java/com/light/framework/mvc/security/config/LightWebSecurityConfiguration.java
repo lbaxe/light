@@ -67,7 +67,7 @@ public class LightWebSecurityConfiguration {
                 .antMatchers("/css/**", "/js/**", "/images/**", "/v3/api-docs/**", "/swagger-resources/**",
                     "/webjars/**")
                 // error
-                .antMatchers("/error/**")
+                .antMatchers("/templates/error/**")
                 // 预检请求
                 .antMatchers(HttpMethod.OPTIONS, "/**");
             if (whites != null && whites.length > 0) {

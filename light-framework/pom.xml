@@ -194,17 +194,20 @@
             <version>5.7.11</version>
             <scope>compile</scope>
         </dependency>
-        <!-- #view -->
-        <!-- 添加 jsp 解析依赖 -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-        </dependency>
+
         <!-- servlet依赖  单独增加的-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
+
+        <!-- #view -->
+        <!-- 添加 jsp 解析依赖 -->
+        <!--<dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+        </dependency>-->
         <!--添加 jstl 标签依赖-->
         <!-- jstl-api-->
         <!--<dependency>

@@ -76,7 +76,7 @@ public class RequestParamFilter extends GenericFilterBean {
             } else if (MediaType.APPLICATION_JSON == mediaType) {
                 input = getJson(request.getInputStream());
             } else if (MediaType.TEXT_HTML == mediaType) {
-                throw new RuntimeException("no support " + MediaType.TEXT_HTML_VALUE + " InputStream");
+                // throw new RuntimeException("no support " + MediaType.TEXT_HTML_VALUE + " InputStream");
             } else if (MediaType.MULTIPART_FORM_DATA == mediaType) {
                 input = getForm(request);
                 // TODO luban
