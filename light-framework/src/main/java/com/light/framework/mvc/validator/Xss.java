@@ -10,8 +10,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import com.light.framework.mvc.filter.light.inner.XssFilter;
 import org.springframework.web.util.HtmlUtils;
+
+import com.light.framework.mvc.filter.light.inner.XssFilter;
 
 /**
  *

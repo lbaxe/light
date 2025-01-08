@@ -10,13 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.light.framework.mvc.filter.shiro.external.ExternalShiroFilter;
+import com.light.framework.mvc.filter.shiro.ShiroProxyChainFilter;
 
 /**
  * token请求认证过滤器
  */
 @Component("JwtFilter")
-public class JwtFilter extends BasicHttpAuthenticationFilter implements ExternalShiroFilter {
+public class JwtFilter extends BasicHttpAuthenticationFilter implements ShiroProxyChainFilter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

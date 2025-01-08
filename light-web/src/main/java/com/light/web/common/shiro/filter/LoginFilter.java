@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.light.framework.mvc.filter.shiro.external.ExternalShiroFilter;
+import com.light.framework.mvc.filter.shiro.ShiroProxyChainFilter;
 
 /**
  * login请求认证过滤器
  */
 @Service("LoginFilter")
-public class LoginFilter extends BasicHttpAuthenticationFilter implements ExternalShiroFilter {
+public class LoginFilter extends BasicHttpAuthenticationFilter implements ShiroProxyChainFilter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

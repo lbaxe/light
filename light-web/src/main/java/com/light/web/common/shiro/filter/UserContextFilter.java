@@ -10,10 +10,10 @@ import javax.servlet.ServletResponse;
 import org.apache.shiro.web.servlet.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
-import com.light.framework.mvc.filter.shiro.external.ExternalShiroGlobalFilter;
+import com.light.framework.mvc.filter.shiro.ShiroGlobalFilter;
 
 @Component("UserContextFilter")
-public class UserContextFilter extends OncePerRequestFilter implements ExternalShiroGlobalFilter {
+public class UserContextFilter extends OncePerRequestFilter implements ShiroGlobalFilter {
 
     @Override
     protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain)

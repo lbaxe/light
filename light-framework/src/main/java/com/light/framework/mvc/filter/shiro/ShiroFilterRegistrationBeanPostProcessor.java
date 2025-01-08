@@ -23,6 +23,7 @@ public class ShiroFilterRegistrationBeanPostProcessor implements BeanFactoryPost
         BeanDefinitionBuilder beanDefinitionBuilder =
             BeanDefinitionBuilder.genericBeanDefinition(FilterRegistrationBean.class);
         beanDefinitionBuilder.addPropertyReference("filter", beanName);
+        // 不注册到web容器
         beanDefinitionBuilder.addPropertyValue("enabled", false);
         beanFactory.registerBeanDefinition(beanName + "FilterRegistrationBean",
             beanDefinitionBuilder.getRawBeanDefinition());

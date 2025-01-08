@@ -7,13 +7,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.light.framework.mvc.filter.shiro.external.ExternalShiroFilter;
+import com.light.framework.mvc.filter.shiro.ShiroProxyChainFilter;
 import com.light.framework.plugin.IPlugin;
 
-public class ExternalShiroFilterPlugin implements IPlugin<List<ExternalShiroFilter>> {
+public class ExternalShiroFilterPlugin implements IPlugin<List<ShiroProxyChainFilter>> {
     private static final Logger logger = LoggerFactory.getLogger(ExternalShiroFilterPlugin.class);
 
-    private final List<ExternalShiroFilter> filters = new ArrayList<>();
+    private final List<ShiroProxyChainFilter> filters = new ArrayList<>();
 
     private ExternalShiroFilterClassScan externalShiroFilterClassScan;
 
@@ -27,7 +27,7 @@ public class ExternalShiroFilterPlugin implements IPlugin<List<ExternalShiroFilt
         List<Class<?>> list = this.externalShiroFilterClassScan.scan();
         for (Class<?> clazz : list) {
             try {
-                this.filters.add((ExternalShiroFilter)clazz.newInstance());
+                this.filters.add((ShiroProxyChainFilter)clazz.newInstance());
             } catch (Exception e) {
                 logger.error("external filter load fail", e);
             }
@@ -50,7 +50,7 @@ public class ExternalShiroFilterPlugin implements IPlugin<List<ExternalShiroFilt
     }
 
     @Override
-    public List<ExternalShiroFilter> getObject() {
+    public List<ShiroProxyChainFilter> getObject() {
         return Collections.unmodifiableList(this.filters);
     }
 }
