@@ -29,6 +29,18 @@
       <artifactId>spring-boot-devtools</artifactId>
       <optional>true</optional> <!-- 表示依赖不会传递 -->
     </dependency>
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.dynamicreg.client</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

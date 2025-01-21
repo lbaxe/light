@@ -54,6 +54,9 @@
         <sharding-jdbc-spring-boot-starter.version>4.1.1</sharding-jdbc-spring-boot-starter.version>
 
         <shiro-spring-boot-web-starter.version>1.9.1</shiro-spring-boot-web-starter.version>
+        <org.apache.oltu.oauth2.client.version>1.0.2</org.apache.oltu.oauth2.client.version>
+        <org.apache.oltu.oauth2.authzserver.version>1.0.2</org.apache.oltu.oauth2.authzserver.version>
+        <org.apache.oltu.oauth2.dynamicreg.client.version>1.0.2</org.apache.oltu.oauth2.dynamicreg.client.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -225,6 +228,21 @@
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-spring-boot-web-starter</artifactId>
                 <version>${shiro-spring-boot-web-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.client</artifactId>
+                <version>${org.apache.oltu.oauth2.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+                <version>${org.apache.oltu.oauth2.authzserver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.dynamicreg.client</artifactId>
+                <version>${org.apache.oltu.oauth2.dynamicreg.client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

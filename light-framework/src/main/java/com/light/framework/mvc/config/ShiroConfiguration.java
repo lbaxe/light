@@ -159,16 +159,16 @@ public class ShiroConfiguration implements ApplicationContextAware {
         });
         // 非白名单url，根据实际filter是否需要做拦截
         for (ShiroProxyChainFilter filter : shiroProxyChainFilters) {
-            String preChainName = filterChainDefinitionMap.get(filter.urlPattern());
-            String nextChainName = filter.getClass().getSimpleName();
-            if (StringUtils.isBlank(preChainName)) {
-                filterChainDefinitionMap.put(filter.urlPattern(), nextChainName);
+            String filterChain = filterChainDefinitionMap.get(filter.urlPattern());
+            String nextFilter = filter.getClass().getSimpleName();
+            if (StringUtils.isBlank(filterChain)) {
+                filterChainDefinitionMap.put(filter.urlPattern(), nextFilter);
             } else {
                 // 不覆盖匿名配置
-                if (preChainName.contains("anon")) {
+                if (filterChain.contains("anon")) {
                     continue;
                 }
-                filterChainDefinitionMap.put(filter.urlPattern(), preChainName + "," + nextChainName);
+                filterChainDefinitionMap.put(filter.urlPattern(), filterChain + "," + nextFilter);
             }
         }
         Map<String, ShiroGlobalFilter> shiroGlobalFilterMap =

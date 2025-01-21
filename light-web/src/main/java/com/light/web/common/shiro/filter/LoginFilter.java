@@ -28,7 +28,7 @@ public class LoginFilter extends BasicHttpAuthenticationFilter implements ShiroP
 
     @Override
     public int priority() {
-        return 10;
+        return 5;
     }
 
     /**
