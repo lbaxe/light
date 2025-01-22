@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.light.core.exception.ServiceException;
 import com.light.core.util.ThrowableUtil;
+import com.light.framework.auth.consts.AuthConst;
 import com.light.framework.mvc.filter.shiro.ShiroProxyChainFilter;
 import com.light.web.common.exception.EnumApiException;
 import com.light.web.common.oauth.OAuth2AccessToken;
@@ -79,7 +80,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
-        String accessToken = httpServletRequest.getHeader("access_token");
+        String accessToken = httpServletRequest.getHeader(AuthConst.AUTH_KEY);
         return StringUtils.hasText(accessToken);
     }
 
@@ -88,7 +89,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         String uri = httpServletRequest.getRequestURI();
 
-        String accessToken = httpServletRequest.getHeader("access_token");
+        String accessToken = httpServletRequest.getHeader(AuthConst.AUTH_KEY);
         String sign = httpServletRequest.getHeader("sign");
         String timestamp = httpServletRequest.getHeader("timestamp");
         String realIp = httpServletRequest.getHeader("X-Real-IP");
@@ -107,6 +108,10 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
         if (!StringUtils.hasText(timestamp)) {
             throw new ServiceException(EnumApiException.INVALID);
         }
+        boolean isRateLimit = this.rateLimit(accessToken, uri);
+        if (isRateLimit) {
+            throw new ServiceException(EnumApiException.THRESHOLD);
+        }
         // 验证时间戳
         long ts = 0L;
         try {
@@ -117,40 +122,35 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
         if (!isLegalTimestamp) {
             throw new ServiceException(EnumApiException.INVALID);
         }
-        // 验签
-        boolean checkSign = this.checkSign(sign, httpServletRequest.getParameterMap(), ts);
-        if (!checkSign) {
-            throw new ServiceException(EnumApiException.INVALID);
+        // 验证accessToken
+        if (!accessToken.startsWith(TokenType.BEARER.toString())
+            || accessToken.length() <= TokenType.BEARER.toString().length() + 1) {
+            throw new ServiceException(EnumApiException.APP_AUTH);
         }
 
+        accessToken = accessToken.substring(TokenType.BEARER.toString().length() + 1);
         OAuth2AuthorizedClient auth2AuthorizedClient =
             oAuth2ClientService.getOAuth2AuthorizedClientByAccessToken(accessToken);
         // 验证clientId
         if (auth2AuthorizedClient == null || !StringUtils.hasText(auth2AuthorizedClient.getClientId())) {
             throw new ServiceException(EnumApiException.APP_AUTH);
         }
-        // 验证accessToken
-        if (!accessToken.startsWith(TokenType.BEARER.toString())
-            || accessToken.length() <= TokenType.BEARER.toString().length() + 1
-            || !auth2AuthorizedClient.getAccessTokenValue()
-                .equals(accessToken.substring(TokenType.BEARER.toString().length()))) {
-            throw new ServiceException(EnumApiException.APP_AUTH);
+        // 验签
+        boolean checkSign =
+            this.checkSign(sign, httpServletRequest.getParameterMap(), ts, auth2AuthorizedClient.getClientId());
+        if (!checkSign) {
+            throw new ServiceException(EnumApiException.INVALID);
         }
         // 验证accessToken有效期
-        if (auth2AuthorizedClient.getAccessTokenExpiresAt().compareTo(new Date()) <= 0) {
+        if (!auth2AuthorizedClient.getAccessTokenExpiresAt().after(new Date())) {
             throw new ServiceException(EnumApiException.ACCESS_TOKEN_EXPIRED);
-        }
-
-        boolean isRateLimit = this.rateLimit(auth2AuthorizedClient.getClientId(), uri);
-        if (isRateLimit) {
-            throw new ServiceException(EnumApiException.THRESHOLD);
         }
         // 验证ip白名单
         if (!this.isWhiteIp((HttpServletRequest)request)) {
             throw new ServiceException(EnumApiException.IPLEGAL);
         }
         logger.info(uri + ",当前请求clientId=" + auth2AuthorizedClient.getClientId() + ",accessToken=" + accessToken
-            + ",sign=" + sign + ",请求格式=" + request.getContentType() + " realIp:" + realIp + " forwardedIp:"
+            + ",sign=" + sign + ",contentType=" + request.getContentType() + " realIp:" + realIp + " forwardedIp:"
             + forwardedIp + " remoteAddr:" + remoteAddr);
         try {
             OAuth2AccessToken token = new OAuth2AccessToken(auth2AuthorizedClient.getClientId(),
@@ -179,7 +179,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
         return timestamp != 0 && System.currentTimeMillis() - timestamp < 1000 * 60 * 5;
     }
 
-    private boolean checkSign(String sign, Map<String, String[]> paramMap, long timestamp) {
+    private boolean checkSign(String sign, Map<String, String[]> paramMap, long timestamp, String clientId) {
         List<String> keyList = new ArrayList<>(paramMap.keySet());
         Collections.sort(keyList);
         StringBuilder builder = new StringBuilder();
@@ -191,6 +191,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
             }
         }
         builder.append(timestamp);
+        builder.append(clientId);
         return this.checkSign(sign, builder.toString());
     }
 
@@ -200,7 +201,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
         return newSignData.equals(signData);
     }
 
-    private boolean rateLimit(String clientId, String uri) {
+    private boolean rateLimit(String accessToken, String uri) {
         return false;
     }
 
