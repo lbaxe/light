@@ -23,6 +23,7 @@ public class OAuth2AuthorizedClient extends BaseEntity {
     private String accessTokenScopes;
     private String refreshTokenValue;
     private Date refreshTokenIssuedAt;
+    private Date refreshTokenExpiresAt;
     private Integer deleteFlag;
     private Date createTime;
     private Date updateTime;

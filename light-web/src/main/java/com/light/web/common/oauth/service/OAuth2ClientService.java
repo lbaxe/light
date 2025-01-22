@@ -32,13 +32,21 @@ public interface OAuth2ClientService extends IService<OAuth2Client> {
     OAuth2AuthorizedClient getOAuth2AuthorizedClientByAccessToken(String accessToken);
 
     /**
+     * 获取客户端的授权记录
+     * 
+     * @param clientId
+     * @param refreshToken
+     * @return
+     */
+    OAuth2AuthorizedClient getOAuth2AuthorizedClientByRefreshToken(String clientId, String refreshToken);
+
+    /**
      * 获取客户端所有有效的授权记录
      * 
      * @param clientId
-     * @param _accessToken
      * @return
      */
-    List<OAuth2AuthorizedClient> getAllValidOAuth2AuthorizedClients(String clientId, String _accessToken);
+    List<OAuth2AuthorizedClient> getAllValidOAuth2AuthorizedClients(String clientId);
 
     /**
      * 移除所有授权的token

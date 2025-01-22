@@ -39,10 +39,15 @@ public class OAuth2ClientServiceImpl extends ServiceImpl<OAuth2ClientMapper, OAu
     }
 
     @Override
-    public List<OAuth2AuthorizedClient> getAllValidOAuth2AuthorizedClients(String clientId, String _accessToken) {
+    public OAuth2AuthorizedClient getOAuth2AuthorizedClientByRefreshToken(String clientId, String refreshToken) {
+        return auth2AuthorizedClientMapper.selectFirst(new LambdaQueryWrapper<OAuth2AuthorizedClient>()
+            .eq(OAuth2AuthorizedClient::getClientId, clientId)
+            .eq(OAuth2AuthorizedClient::getRefreshTokenValue, refreshToken).orderByDesc(OAuth2AuthorizedClient::getId));
+    }
+    @Override
+    public List<OAuth2AuthorizedClient> getAllValidOAuth2AuthorizedClients(String clientId) {
         return auth2AuthorizedClientMapper.selectList(
             new LambdaQueryWrapper<OAuth2AuthorizedClient>().eq(OAuth2AuthorizedClient::getClientId, clientId)
-                .eq(_accessToken != null, OAuth2AuthorizedClient::getAccessTokenValue, _accessToken)
                 .orderByDesc(OAuth2AuthorizedClient::getId));
     }
 

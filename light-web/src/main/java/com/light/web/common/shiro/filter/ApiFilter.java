@@ -6,6 +6,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.oltu.oauth2.common.message.types.TokenType;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
@@ -129,10 +130,10 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
             throw new ServiceException(EnumApiException.APP_AUTH);
         }
         // 验证accessToken
-        if (!accessToken.startsWith(OAuth2AccessToken.TokenType.BEARER.toString())
-            || accessToken.length() <= OAuth2AccessToken.TokenType.BEARER.toString().length() + 1
+        if (!accessToken.startsWith(TokenType.BEARER.toString())
+            || accessToken.length() <= TokenType.BEARER.toString().length() + 1
             || !auth2AuthorizedClient.getAccessTokenValue()
-                .equals(accessToken.substring(OAuth2AccessToken.TokenType.BEARER.toString().length()))) {
+                .equals(accessToken.substring(TokenType.BEARER.toString().length()))) {
             throw new ServiceException(EnumApiException.APP_AUTH);
         }
         // 验证accessToken有效期
@@ -153,7 +154,7 @@ public class ApiFilter extends BasicHttpAuthenticationFilter implements ShiroPro
             + forwardedIp + " remoteAddr:" + remoteAddr);
         try {
             OAuth2AccessToken token = new OAuth2AccessToken(auth2AuthorizedClient.getClientId(),
-                auth2AuthorizedClient.getAccessTokenValue(), OAuth2AccessToken.TokenType.BEARER,
+                auth2AuthorizedClient.getAccessTokenValue(), TokenType.BEARER,
                 auth2AuthorizedClient.getAccessTokenExpiresAt().getTime() / 1000,
                 auth2AuthorizedClient.getRefreshTokenValue(), auth2AuthorizedClient.getAccessTokenScopes());
             Subject subject = this.getSubject(request, response);

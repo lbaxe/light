@@ -20,14 +20,16 @@ import java.security.SecureRandom;
 
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.as.issuer.MD5Generator;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.light.core.exception.ServiceException;
 import com.light.web.common.oauth.mapper.OAuth2ClientMapper;
@@ -37,7 +39,8 @@ import com.light.web.common.oauth.service.OAuth2ClientService;
 import cn.hutool.crypto.digest.DigestUtil;
 
 @Validated
-@Controller("/oauth/app")
+@RequestMapping("/oauth/app")
+@RestController
 public class AppController {
     @Autowired
     private OAuth2ClientService authzServerService;
@@ -56,8 +59,7 @@ public class AppController {
      * @param appRedirectUri
      * @param scope
      */
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public void register(@NotBlank(message = "应用名称 必填") String appName, String appIcon, String appUrl,
         @NotBlank(message = "应用描述 必填") String appDescription, @NotBlank(message = "授权回调应用的接口 必填") String appRedirectUri,
         String scope) {
@@ -72,8 +74,8 @@ public class AppController {
         if (oAuth2Client != null) {
             throw new ServiceException("系统繁忙，稍后重试");
         }
-        byte[] bytes = new byte[10];
-        String clientSecret = DigestUtil.sha256Hex(bytes);
+        String seed = clientId + System.currentTimeMillis() + random.nextInt();
+        String clientSecret = DigestUtil.sha256Hex(seed);
         OAuth2Client client = new OAuth2Client();
         client.setClientId(clientId);
         client.setClientSecret(clientSecret);
@@ -91,6 +93,20 @@ public class AppController {
     }
 
     /**
+     * 应用详情
+     *
+     * @param clientId
+     */
+    @PostMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    public OAuth2Client edit(@NotBlank(message = "参数异常") String clientId) {
+        OAuth2Client oAuth2Client = authzServerService.getOAuth2Client(clientId);
+        if (oAuth2Client == null) {
+            throw new ServiceException("系统繁忙，稍后重试");
+        }
+        oAuth2Client.setClientSecret(StringUtils.abbreviate(oAuth2Client.getClientSecret(), "****", 56, 12));
+        return oAuth2Client;
+    }
+    /**
      * 编辑OAuth应用信息
      * 
      * @param clientId
@@ -101,8 +117,7 @@ public class AppController {
      * @param appRedirectUri
      * @param scope
      */
-    @PostMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/edit", produces = MediaType.APPLICATION_JSON_VALUE)
     public void edit(@NotBlank(message = "参数异常") String clientId, @NotBlank(message = "应用名称 必填") String appName,
         String appIcon, String appUrl, @NotBlank(message = "应用描述 必填") String appDescription,
         @NotBlank(message = "授权回调应用的接口 必填") String appRedirectUri, String scope) {
@@ -126,8 +141,7 @@ public class AppController {
      * 
      * @param clientId
      */
-    @PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@NotBlank(message = "参数异常") String clientId) {
         OAuth2Client oAuth2Client = authzServerService.getOAuth2Client(clientId);
         if (oAuth2Client == null) {
@@ -141,19 +155,19 @@ public class AppController {
      * 
      * @param clientId
      */
-    @PostMapping(value = "/updateSecret", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateSecret(@NotBlank(message = "参数异常") String clientId) {
+    @PostMapping(value = "/updateSecret", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String updateSecret(@NotBlank(message = "参数异常") String clientId) {
         OAuth2Client oAuth2Client = authzServerService.getOAuth2Client(clientId);
-        if (oAuth2Client != null) {
+        if (oAuth2Client == null) {
             throw new ServiceException("系统繁忙，稍后重试");
         }
-        byte[] bytes = new byte[10];
-        String clientSecret = DigestUtil.sha256Hex(bytes);
+        String seed = clientId + System.currentTimeMillis() + random.nextInt();
+        String clientSecret = DigestUtil.sha256Hex(seed);
         OAuth2Client client = new OAuth2Client();
         client.setId(oAuth2Client.getId());
         client.setClientSecret(clientSecret);
         oAuth2ClientMapper.updateById(client);
+        return clientSecret;
     }
 
     /**
@@ -161,8 +175,7 @@ public class AppController {
      * 
      * @param clientId
      */
-    @PostMapping(value = "/removeAccessTokens", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/removeAccessTokens", produces = MediaType.APPLICATION_JSON_VALUE)
     public void removeAccessTokens(@NotBlank(message = "参数异常") String clientId) {
         OAuth2Client oAuth2Client = authzServerService.getOAuth2Client(clientId);
         if (oAuth2Client == null) {
