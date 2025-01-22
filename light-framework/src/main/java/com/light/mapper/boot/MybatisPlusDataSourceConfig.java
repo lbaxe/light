@@ -24,7 +24,7 @@ import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSour
  */
 @Configuration
 @EnableConfigurationProperties(DynamicDataSourceProperties.class)
-public class MybatisPlusDataSourceCustomConfig {
+public class MybatisPlusDataSourceConfig {
 
     /**
      * 分表数据源名称
@@ -39,7 +39,7 @@ public class MybatisPlusDataSourceCustomConfig {
      */
     private ObjectFactory<ShardingDataSource> shardingDataSource;
 
-    MybatisPlusDataSourceCustomConfig(DynamicDataSourceProperties dynamicDataSourceProperties,
+    MybatisPlusDataSourceConfig(DynamicDataSourceProperties dynamicDataSourceProperties,
         ObjectFactory<ShardingDataSource> shardingDataSource) {
         this.dynamicDataSourceProperties = dynamicDataSourceProperties;
         this.shardingDataSource = shardingDataSource;

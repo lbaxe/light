@@ -8,8 +8,6 @@ import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -22,11 +20,10 @@ import com.light.framework.cache.redis.IRedisClient;
 import com.light.framework.cache.redis.RedisClientContext;
 
 @Configuration
-public class RedisCustomConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(RedisCustomConfiguration.class);
+public class RedisConfig {
+    private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
     @Bean
-    @ConditionalOnSingleCandidate(RedisConnectionFactory.class)
     public StringRedisTemplate redisTemplate(RedisConnectionFactory connectionFactory) {
         StringRedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(connectionFactory);
@@ -37,7 +34,6 @@ public class RedisCustomConfiguration {
     }
 
     @Bean
-    @ConditionalOnSingleCandidate(RedisConnectionFactory.class)
     public RedisTemplate<String, Object> redisTemplate1(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate();
         template.setConnectionFactory(connectionFactory);
@@ -48,7 +44,6 @@ public class RedisCustomConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(StringRedisTemplate.class)
     public IRedisClient redisClient(StringRedisTemplate stringRedisTemplate) {
         return (IRedisClient)Proxy.newProxyInstance(RedisClientContext.class.getClassLoader(),
             RedisClientContext.class.getInterfaces(),

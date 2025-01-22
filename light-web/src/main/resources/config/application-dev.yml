@@ -6,6 +6,10 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  redis:
+    host: 192.168.0.205
+    port: 6379
+    password: HBcjy@1303
   datasource:
     dynamic:
       #设置严格模式，默认false不启动，不启动则使用默认数据源;启动后未匹配到指定数据源时会抛出异常

@@ -3,7 +3,9 @@ spring:
     name: light
   profiles:
     active: dev
-
+mybatis-plus:
+  mapper-locations: classpath:mapper1/*.xml
+  type-aliases-package: com.dzq.**.entity
 #不校验登录 白名单url
 security:
   ignore:
@@ -14,4 +16,7 @@ security:
       - /captcha/captcha
       - /login.jsp
       - /login/logout
+      - /oauth/authorize
+      - /oauth/token
+      - /oauth/**
       - /system/menu/**

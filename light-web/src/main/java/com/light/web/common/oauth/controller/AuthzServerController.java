@@ -63,7 +63,7 @@ public class AuthzServerController {
         "Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).";
     @Autowired
     private OAuth2ClientService oAuth2ClientService;
-    @Autowired
+    // @Autowired
     private IRedisClient redisClient;
 
     /**
