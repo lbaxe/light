@@ -97,6 +97,7 @@ public class AuthzServerController {
             // 暂不支持简化模式
             if (responseType == null || responseType == ResponseType.TOKEN) {
                 oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                    .location(redirectURI)
                     .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
                     .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
                 return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
@@ -107,6 +108,7 @@ public class AuthzServerController {
             oauthResponse = this.validClientAndScopes(oauthRequest, oAuth2Client);
             if (oauthResponse != null) {
                 oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                    .location(redirectURI)
                     .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
                     .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
                 return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
@@ -131,7 +133,10 @@ public class AuthzServerController {
                     OAuth2AuthorizedClient oAuth2AuthorizedClient =
                         oAuth2ClientService.getOAuth2AuthorizedClientByAccessToken(accessToken);
                     if (oAuth2AuthorizedClient != null) {
-                        throw new ServiceException("系统繁忙，稍后重试");
+                        oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                            .location(redirectURI).setError(OAuthError.TokenResponse.INVALID_GRANT)
+                            .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
+                        return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
                     }
                     builder.setAccessToken(accessToken);
                     builder.setTokenType(TokenType.BEARER.toString());
