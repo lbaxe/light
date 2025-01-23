@@ -44,10 +44,6 @@ public class OAuth2Client extends BaseEntity {
      */
     private String authorizedGrantTypes;
     /**
-     * 客户端所拥有的权限值
-     */
-    private String authorities;
-    /**
      * 授权范围
      */
     private String scope;

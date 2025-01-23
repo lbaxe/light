@@ -21,10 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,15 +46,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.light.core.annotation.IgnoreResponseWrapper;
 import com.light.core.exception.ServiceException;
 import com.light.framework.cache.redis.IRedisClient;
+import com.light.web.common.oauth.OAuthUtil;
 import com.light.web.common.oauth.mapper.OAuth2AuthorizedClientMapper;
 import com.light.web.common.oauth.mapper.entity.OAuth2AuthorizedClient;
 import com.light.web.common.oauth.mapper.entity.OAuth2Client;
+import com.light.web.common.oauth.service.AuthzServerService;
 import com.light.web.common.oauth.service.OAuth2ClientService;
 
 /**
@@ -66,13 +63,12 @@ import com.light.web.common.oauth.service.OAuth2ClientService;
 @Controller
 @RequestMapping("/oauth")
 public class AuthzServerController {
-
-    public static final String INVALID_CLIENT_DESCRIPTION =
-        "Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).";
     @Autowired
     private OAuth2ClientService oAuth2ClientService;
     @Autowired
     private OAuth2AuthorizedClientMapper oAuth2AuthorizedClientMapper;
+    @Autowired
+    private AuthzServerService authzServerService;
     @Autowired
     private IRedisClient redisClient;
 
@@ -86,33 +82,28 @@ public class AuthzServerController {
      */
     @GetMapping("/authorize")
     @IgnoreResponseWrapper
-    public ModelAndView authorize(HttpServletRequest request) throws OAuthSystemException {
+    public void authorize(HttpServletRequest request, HttpServletResponse response)
+        throws IOException, OAuthSystemException {
         OAuthAuthzRequest oauthRequest = null;
         OAuthResponse oauthResponse = null;
+        String redirectURI = null;
         try {
             oauthRequest = new OAuthAuthzRequest(request);
-            String redirectURI = oauthRequest.getParam(OAuth.OAUTH_REDIRECT_URI);
+            redirectURI = oauthRequest.getParam(OAuth.OAUTH_REDIRECT_URI);
             // build response according to response_type
-            ResponseType responseType = this.convertResponseType(oauthRequest.getParam(OAuth.OAUTH_RESPONSE_TYPE));
+            ResponseType responseType = OAuthUtil.convertResponseType(oauthRequest.getParam(OAuth.OAUTH_RESPONSE_TYPE));
             // 暂不支持简化模式
             if (responseType == null || responseType == ResponseType.TOKEN) {
-                oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .location(redirectURI)
-                    .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
-                    .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
-                return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
+                throw OAuthProblemException.error(OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE)
+                    .description(OAuthUtil.INVALID_CLIENT_DESCRIPTION)
+                    // .uri("")
+                    .responseStatus(HttpServletResponse.SC_FOUND).state(oauthRequest.getState());
             }
 
             OAuth2Client oAuth2Client = oAuth2ClientService.getOAuth2Client(oauthRequest.getClientId());
             // 验证客户端和权限范围
-            oauthResponse = this.validClientAndScopes(oauthRequest, oAuth2Client);
-            if (oauthResponse != null) {
-                oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .location(redirectURI)
-                    .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
-                    .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
-                return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
-            }
+            authzServerService.validAuthzRequest(oauthRequest, oAuth2Client);
+
             OAuthASResponse.OAuthAuthorizationResponseBuilder builder =
                 OAuthASResponse.authorizationResponse(request, HttpServletResponse.SC_FOUND);
             OAuthIssuerImpl oAuthIssuer = new OAuthIssuerImpl(new MD5Generator());
@@ -133,10 +124,10 @@ public class AuthzServerController {
                     OAuth2AuthorizedClient oAuth2AuthorizedClient =
                         oAuth2ClientService.getOAuth2AuthorizedClientByAccessToken(accessToken);
                     if (oAuth2AuthorizedClient != null) {
-                        oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .location(redirectURI).setError(OAuthError.TokenResponse.INVALID_GRANT)
-                            .setErrorDescription(INVALID_CLIENT_DESCRIPTION).buildQueryMessage();
-                        return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
+                        throw OAuthProblemException.error(OAuthError.CodeResponse.SERVER_ERROR)
+                            .description(OAuthUtil.INVALID_CLIENT_DESCRIPTION)
+                            // .uri("")
+                            .responseStatus(HttpServletResponse.SC_FOUND).state(oauthRequest.getState());
                     }
                     builder.setAccessToken(accessToken);
                     builder.setTokenType(TokenType.BEARER.toString());
@@ -144,12 +135,19 @@ public class AuthzServerController {
                     break;
             }
             oauthResponse = builder.location(redirectURI).buildQueryMessage();
-            return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
+            // return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
+            response.sendRedirect(oauthResponse.getLocationUri());
         } catch (OAuthProblemException e) {
-            oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_FOUND).error(e)
-                .location(e.getRedirectUri())
-                .buildQueryMessage();
-            return new ModelAndView(new RedirectView(oauthResponse.getLocationUri()));
+            if (redirectURI != null) {
+                oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_FOUND).error(e)
+                    .location(redirectURI).buildQueryMessage();
+                response.sendRedirect(oauthResponse.getLocationUri());
+            } else {
+                oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).error(e)
+                    .buildJSONMessage();
+                response.setStatus(oauthResponse.getResponseStatus());
+                response.getWriter().write(oauthResponse.getBody());
+            }
         }
     }
 
@@ -169,37 +167,15 @@ public class AuthzServerController {
         try {
             OAuthTokenRequest oauthRequest = new OAuthTokenRequest(request);
 
-            GrantType grantType = this.convertGrantType(oauthRequest.getParam(OAuth.OAUTH_GRANT_TYPE));
+            GrantType grantType = OAuthUtil.convertGrantType(oauthRequest.getParam(OAuth.OAUTH_GRANT_TYPE));
             if (grantType == null || grantType == GrantType.IMPLICIT || grantType == GrantType.JWT_BEARER) {
-                OAuthResponse oauthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
-                    .setErrorDescription(INVALID_CLIENT_DESCRIPTION)
-                    .buildJSONMessage();
-                response.setStatus(oauthResponse.getResponseStatus());
-                response.getWriter().write(oauthResponse.getBody());
-                return;
+                throw OAuthProblemException.error(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE)
+                    .description(OAuthUtil.INVALID_CLIENT_DESCRIPTION)
+                    .responseStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
             OAuth2Client oAuth2Client = oAuth2ClientService.getOAuth2Client(oauthRequest.getClientId());
-            OAuthResponse oAuthResponse = null;
-            switch (grantType) {
-                case AUTHORIZATION_CODE:
-                    oAuthResponse = validAuthorizationCode(oauthRequest, oAuth2Client);
-                    break;
-                case CLIENT_CREDENTIALS:
-                    oAuthResponse = validClientCredentials(oauthRequest, oAuth2Client);
-                    break;
-                case REFRESH_TOKEN:
-                    oAuthResponse = validRefreshToken(oauthRequest, oAuth2Client);
-                    break;
-                case PASSWORD:
-                    oAuthResponse = validPassword(oauthRequest, oAuth2Client);
-                    break;
-            }
-            if (oAuthResponse != null) {
-                response.setStatus(oAuthResponse.getResponseStatus());
-                response.getWriter().write(oAuthResponse.getBody());
-                return;
-            }
+            authzServerService.validTokenRequest(oauthRequest, oAuth2Client,
+                request.getHeader(OAuth.HeaderType.AUTHORIZATION) == null);
 
             OAuth2AuthorizedClient auth2AuthorizedClient = null;
 
@@ -257,187 +233,9 @@ public class AuthzServerController {
             response.getWriter().write(oauthResponse.getBody());
         } catch (OAuthProblemException e) {
             OAuthResponse oauthResponse =
-                OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e).buildJSONMessage();
+                OAuthASResponse.errorResponse(e.getResponseStatus()).error(e).buildJSONMessage();
             response.setStatus(oauthResponse.getResponseStatus());
             response.getWriter().write(oauthResponse.getBody());
         }
-    }
-
-    private OAuthResponse validAuthorizationCode(OAuthTokenRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = validClientCredentials(oauthRequest, oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        // 验证授权码
-        String codeCache = redisClient.hGet(oAuth2Client.getClientId(), OAuth.OAUTH_CODE);
-        if (codeCache == null || !codeCache.equals(oauthRequest.getCode())) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_GRANT).setErrorDescription("invalid authorization code")
-                .buildJSONMessage();
-        }
-        // 验证scope是否与授权申请相同
-        String scopeCache = redisClient.hGet(oAuth2Client.getClientId(), OAuth.OAUTH_SCOPE);
-        if (scopeCache == null) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_SCOPE).setErrorDescription("invalid scope")
-                .buildJSONMessage();
-        }
-        Set<String> scopeCacheSet = Stream.of(scopeCache).map(String::trim).collect(Collectors.toSet());
-        boolean isSameSize = scopeCacheSet.size() == oauthRequest.getScopes().size();
-        // 取差集
-        Set<String> requestScopes = new HashSet<>(oauthRequest.getScopes());
-        requestScopes.removeAll(scopeCacheSet);
-        if (!isSameSize || !requestScopes.isEmpty()) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_SCOPE).setErrorDescription("invalid scope")
-                .buildJSONMessage();
-        }
-        // 失效授权码
-        redisClient.del(oAuth2Client.getClientId());
-        return null;
-    }
-
-    private OAuthResponse validClientCredentials(OAuthTokenRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = this.validClientAndScopes(oauthRequest, oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        // check if client_secret is valid
-        if (!oAuth2Client.getClientSecret().equals(oauthRequest.getClientSecret())) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                .setError(OAuthError.TokenResponse.UNAUTHORIZED_CLIENT).setErrorDescription(INVALID_CLIENT_DESCRIPTION)
-                .buildJSONMessage();
-        }
-        return null;
-    }
-
-    private OAuthResponse validPassword(OAuthTokenRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = this.validClientAndScopes(oauthRequest, oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-            .setError(OAuthError.TokenResponse.UNSUPPORTED_GRANT_TYPE).setErrorDescription(INVALID_CLIENT_DESCRIPTION)
-            .buildJSONMessage();
-    }
-
-    private OAuthResponse validRefreshToken(OAuthTokenRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = this.validClientCredentials(oauthRequest, oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        OAuth2AuthorizedClient oAuth2AuthorizedClient =
-            oAuth2ClientService.getLatestOAuth2AuthorizedClientByClientId(oauthRequest.getClientId());
-        if (oAuth2AuthorizedClient == null) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_GRANT).setErrorDescription("invalid refresh")
-                .buildJSONMessage();
-        }
-        // 上次的refresh_token失效
-        if (!oAuth2AuthorizedClient.getRefreshTokenValue().equals(oauthRequest.getRefreshToken())) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_GRANT).setErrorDescription("invalid refresh")
-                .buildJSONMessage();
-        }
-        // 验证scope
-        Set<String> preScopes =
-            Stream.of(oAuth2AuthorizedClient.getAccessTokenScopes()).map(String::trim).collect(Collectors.toSet());
-        Set<String> requestScopes = new HashSet<>();
-        // 不可以超出上一次申请的范围，如果省略该参数，则表示与上一次一致。
-        if (oauthRequest.getScopes().isEmpty()) {
-            requestScopes.addAll(preScopes);
-        } else {
-            requestScopes.addAll(oauthRequest.getScopes());
-        }
-        requestScopes.removeAll(preScopes);
-        // 超过上次scope范围
-        if (!requestScopes.isEmpty()) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_SCOPE).setErrorDescription("invalid scope")
-                .buildJSONMessage();
-        }
-        // 验证refresh_token有效期
-        if (!oAuth2AuthorizedClient.getRefreshTokenExpiresAt().after(new Date())) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_GRANT).setErrorDescription("invalid refresh")
-                .buildJSONMessage();
-        }
-        return null;
-    }
-
-    private OAuthResponse validClientAndScopes(OAuthTokenRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = this.validClient(oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        Set<String> scopes = oauthRequest.getScopes();
-        Set<String> clientScopses =
-            Stream.of(oAuth2Client.getScope().split(",")).map(String::trim).collect(Collectors.toSet());
-        scopes.removeAll(clientScopses);
-        if (!scopes.isEmpty()) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_SCOPE).setErrorDescription("invalid scope")
-                .buildJSONMessage();
-        }
-        return null;
-    }
-
-    private OAuthResponse validClientAndScopes(OAuthAuthzRequest oauthRequest, OAuth2Client oAuth2Client)
-        throws OAuthSystemException {
-        OAuthResponse oAuthResponse = this.validClient(oAuth2Client);
-        if (oAuthResponse != null) {
-            return oAuthResponse;
-        }
-        Set<String> scopes = oauthRequest.getScopes();
-        Set<String> clientScopses =
-            Stream.of(oAuth2Client.getScope().split(",")).map(String::trim).collect(Collectors.toSet());
-        scopes.removeAll(clientScopses);
-        if (!scopes.isEmpty()) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_SCOPE).setErrorDescription("invalid scope")
-                .buildQueryMessage();
-        }
-
-        return null;
-    }
-
-    private OAuthResponse validClient(OAuth2Client oAuth2Client) throws OAuthSystemException {
-        if (oAuth2Client == null) {
-            return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                .setError(OAuthError.TokenResponse.INVALID_CLIENT).setErrorDescription(INVALID_CLIENT_DESCRIPTION)
-                .buildJSONMessage();
-        }
-        return null;
-    }
-
-    private GrantType convertGrantType(String grantType) {
-        if (GrantType.AUTHORIZATION_CODE.toString().equals(grantType)) {
-            return GrantType.AUTHORIZATION_CODE;
-        } else if (GrantType.CLIENT_CREDENTIALS.toString().equals(grantType)) {
-            return GrantType.CLIENT_CREDENTIALS;
-        } else if (GrantType.PASSWORD.toString().equals(grantType)) {
-            return GrantType.PASSWORD;
-        } else if (GrantType.IMPLICIT.toString().equals(grantType)) {
-            return GrantType.IMPLICIT;
-        } else if (GrantType.REFRESH_TOKEN.toString().equals(grantType)) {
-            return GrantType.REFRESH_TOKEN;
-        } else if (GrantType.JWT_BEARER.toString().equals(grantType)) {
-            return GrantType.JWT_BEARER;
-        }
-        return null;
-    }
-
-    private ResponseType convertResponseType(String responseType) {
-        if (ResponseType.CODE.toString().equals(responseType)) {
-            return ResponseType.CODE;
-        } else if (ResponseType.TOKEN.toString().equals(responseType)) {
-            return ResponseType.TOKEN;
-        }
-        return null;
     }
 }
