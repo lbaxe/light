@@ -12,4 +12,8 @@ public class TestController {
     public JsonResult test() {
         return JsonResult.success();
     }
+
+    public void test1() {
+        System.out.println("test1====");
+    }
 }

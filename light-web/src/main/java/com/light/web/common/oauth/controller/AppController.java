@@ -85,7 +85,6 @@ public class AppController {
         client.setAppDescription(appDescription);
         client.setAppRedirectUri(appRedirectUri);
         client.setAuthorizedGrantTypes(GrantType.CLIENT_CREDENTIALS.toString());
-        client.setAuthorities("");
         client.setScope(scope);
         client.setAccessTokenValidity(3600 * 2);
         client.setRefreshTokenValidity(3600 * 8);
